@@ -6,8 +6,63 @@ const RNNotifications = NativeModules.WixRNNotifications;
 let notificationReceivedListener;
 let notificationOpenedListener;
 let registrationTokenUpdateListener;
+let actionListenerMap = new Map();
+let _actionListenerMap = new Map();
+
+
+export class NotificationAction {
+  options: Object;
+  handler: Function;
+
+  constructor(options: Object, handler: Function) {
+    this.options = options;
+    this.handler = handler;
+  }
+}
+
+export class NotificationCategory {
+  options: Object;
+
+  constructor(options: Object) {
+    this.options = options;
+  }
+}
 
 export class NotificationsAndroid {
+
+
+  static setNotificationActionListener(actionId,listener) {
+    actionListenerMap.set(actionId,  DeviceEventEmitter.addListener(actionId, (notification) => listener(new NotificationAndroid(notification))));
+  } 
+
+  static clearNotificationActionListener(actionId) {
+    actionListenerMap.get(actionId).remove();
+    actionListenerMap.delete(actionId);
+  }
+
+  static setNotificationCategory(categories: Array<NotificationCategory>){
+    let notificationCategories = [];
+
+    if (categories) {
+      notificationCategories = categories.map(category => {
+              return Object.assign({}, category.options, {
+                actions: category.options.actions.map(action => {
+                  // subscribe to action event
+                  actionListenerMap.set(
+                    category.options.identifier+ "-" + action.options.identifier, 
+                    DeviceEventEmitter.addListener(category.options.identifier+ "-" + action.options.identifier , action.handler));
+
+                  return action.options;
+                })
+              });
+            });
+       
+    }
+    RNNotifications.setNotificationCategory(notificationCategories);
+  }
+
+
+
   static setNotificationOpenedListener(listener) {
     notificationOpenedListener = DeviceEventEmitter.addListener("notificationOpened", (notification) => listener(new NotificationAndroid(notification)));
   }

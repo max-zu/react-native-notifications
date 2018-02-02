@@ -13,10 +13,12 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.wix.reactnativenotifications.core.AppLifecycleFacade;
 import com.wix.reactnativenotifications.core.AppLifecycleFacadeHolder;
 import com.wix.reactnativenotifications.core.InitialNotificationHolder;
+import com.wix.reactnativenotifications.core.NotificationCategory;
 import com.wix.reactnativenotifications.core.ReactAppLifecycleFacade;
 import com.wix.reactnativenotifications.core.notification.IPushNotification;
 import com.wix.reactnativenotifications.core.notification.PushNotification;
@@ -25,9 +27,15 @@ import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificatio
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
 import com.wix.reactnativenotifications.gcm.GcmInstanceIdRefreshHandlerService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.wix.reactnativenotifications.Defs.LOGTAG;
 
 public class RNNotificationsModule extends ReactContextBaseJavaModule implements AppLifecycleFacade.AppVisibilityListener, Application.ActivityLifecycleCallbacks {
+
+    private static List<NotificationCategory> categories = new ArrayList<>();
+
 
     public RNNotificationsModule(Application application, ReactApplicationContext reactContext) {
         super(reactContext);
@@ -37,6 +45,10 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
         }
         AppLifecycleFacadeHolder.get().addVisibilityListener(this);
         application.registerActivityLifecycleCallbacks(this);
+    }
+
+    public static List<NotificationCategory> getCategories() {
+        return categories;
     }
 
     @Override
@@ -83,6 +95,17 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
         final IPushNotification pushNotification = PushNotification.get(getReactApplicationContext().getApplicationContext(), notificationProps);
         pushNotification.onPostRequest(notificationId);
     }
+
+    @ReactMethod
+    public void setNotificationCategory(ReadableArray categoryPropsArray) {
+        Log.d(LOGTAG, "Native method invocation: setNotificationCategory ");
+        categories.clear();
+        for (int i = 0; i < categoryPropsArray.size(); i++) {
+            final Bundle categoryProps = Arguments.toBundle(categoryPropsArray.getMap(i));
+            categories.add(new NotificationCategory(categoryProps));
+        }
+    }
+
 
     @ReactMethod
     public void cancelLocalNotification(int notificationId) {

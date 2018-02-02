@@ -6,14 +6,19 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReactContext;
+import com.wix.reactnativenotifications.ActionReceiver;
+import com.wix.reactnativenotifications.RNNotificationsModule;
+import com.wix.reactnativenotifications.core.Action;
 import com.wix.reactnativenotifications.core.AppLaunchHelper;
 import com.wix.reactnativenotifications.core.AppLifecycleFacade;
 import com.wix.reactnativenotifications.core.AppLifecycleFacade.AppVisibilityListener;
 import com.wix.reactnativenotifications.core.AppLifecycleFacadeHolder;
 import com.wix.reactnativenotifications.core.InitialNotificationHolder;
 import com.wix.reactnativenotifications.core.JsIOHelper;
+import com.wix.reactnativenotifications.core.NotificationCategory;
 import com.wix.reactnativenotifications.core.NotificationIntentAdapter;
 import com.wix.reactnativenotifications.core.ProxyService;
 
@@ -136,13 +141,32 @@ public class PushNotification implements IPushNotification {
     }
 
     protected Notification.Builder getNotificationBuilder(PendingIntent intent) {
-        return new Notification.Builder(mContext)
+        Notification.Builder mBuilder = new Notification.Builder(mContext)
                 .setContentTitle(mNotificationProps.getTitle())
                 .setContentText(mNotificationProps.getBody())
                 .setSmallIcon(mContext.getApplicationInfo().icon)
                 .setContentIntent(intent)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setAutoCancel(true);
+        return addActionsToBuilder(mBuilder, mNotificationProps.asBundle());
+    }
+
+    protected Notification.Builder addActionsToBuilder(Notification.Builder mBuilder, Bundle data) {
+        if (!data.containsKey("identifier")) return mBuilder;
+        String identifer = data.getString("identifier");
+        NotificationCategory category = null;
+        for (NotificationCategory cat : RNNotificationsModule.getCategories()) {
+            if (cat.getIdentifier().equals(identifer)) {
+                category = cat;
+                continue;
+            }
+        }
+        if (category == null) return mBuilder;
+
+        for (Action action : category.getActions()) {
+            mBuilder.addAction(0, action.getTitle(), action.getPendingIntent(mContext, data));
+        }
+        return mBuilder;
     }
 
     protected int postNotification(Notification notification, Integer notificationId) {

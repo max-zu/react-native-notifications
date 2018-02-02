@@ -55,6 +55,13 @@
         <service
             android:name=".gcm.GcmInstanceIdRefreshHandlerService"
             android:exported="false" />
+
+        <receiver
+            android:name="com.wix.reactnativenotifications.ActionReceiver">
+            <intent-filter>
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
