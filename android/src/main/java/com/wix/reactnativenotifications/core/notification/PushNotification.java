@@ -1,15 +1,20 @@
 package com.wix.reactnativenotifications.core.notification;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReactContext;
 import com.wix.reactnativenotifications.ActionReceiver;
+import com.wix.reactnativenotifications.R;
 import com.wix.reactnativenotifications.RNNotificationsModule;
 import com.wix.reactnativenotifications.core.Action;
 import com.wix.reactnativenotifications.core.AppLaunchHelper;
@@ -22,6 +27,10 @@ import com.wix.reactnativenotifications.core.NotificationCategory;
 import com.wix.reactnativenotifications.core.NotificationIntentAdapter;
 import com.wix.reactnativenotifications.core.ProxyService;
 
+import static com.wix.reactnativenotifications.Defs.GCM_CHANEL_ID_ATTR_NAME;
+import static com.wix.reactnativenotifications.Defs.GCM_CHANEL_NAME_ATTR_NAME;
+import static com.wix.reactnativenotifications.Defs.GCM_SENDER_ID_ATTR_NAME;
+import static com.wix.reactnativenotifications.Defs.LOGTAG;
 import static com.wix.reactnativenotifications.Defs.NOTIFICATION_OPENED_EVENT_NAME;
 import static com.wix.reactnativenotifications.Defs.NOTIFICATION_RECEIVED_EVENT_NAME;
 
@@ -45,6 +54,7 @@ public class PushNotification implements IPushNotification {
     };
 
     public static IPushNotification get(Context context, Bundle bundle) {
+        Log.d("NOTIFICATION", "LAUNCHED GET");
         Context appContext = context.getApplicationContext();
         if (appContext instanceof INotificationsApplication) {
             return ((INotificationsApplication) appContext).getPushNotification(context, bundle, AppLifecycleFacadeHolder.get(), new AppLaunchHelper());
@@ -53,6 +63,7 @@ public class PushNotification implements IPushNotification {
     }
 
     protected PushNotification(Context context, Bundle bundle, AppLifecycleFacade appLifecycleFacade, AppLaunchHelper appLaunchHelper, JsIOHelper JsIOHelper) {
+        Log.d("NOTIFICATION", "NEW INSTANCE GET");
         mContext = context;
         mAppLifecycleFacade = appLifecycleFacade;
         mAppLaunchHelper = appLaunchHelper;
@@ -141,6 +152,7 @@ public class PushNotification implements IPushNotification {
     }
 
     protected Notification.Builder getNotificationBuilder(PendingIntent intent) {
+        Log.d("NOTIFICATIONS", "getNotificationBuilder");
         Notification.Builder mBuilder = new Notification.Builder(mContext)
                 .setContentTitle(mNotificationProps.getTitle())
                 .setContentText(mNotificationProps.getBody())
@@ -148,7 +160,41 @@ public class PushNotification implements IPushNotification {
                 .setContentIntent(intent)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setAutoCancel(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String CHANNEL_ID =getChanelIdFromManifest();// The id of the channel.
+            CharSequence name = getChanelNameFromManifest();// The user-visible name of the channel.
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
+            mBuilder.setChannelId(CHANNEL_ID);
+            NotificationManager mNotificationManager =
+                    (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.createNotificationChannel(mChannel);
+        }
         return addActionsToBuilder(mBuilder, mNotificationProps.asBundle());
+    }
+
+    protected String getChanelIdFromManifest() {
+        final ApplicationInfo appInfo;
+        try {
+            appInfo = mContext.getPackageManager().getApplicationInfo(mContext.getPackageName(), PackageManager.GET_META_DATA);
+            return appInfo.metaData.getString(GCM_CHANEL_ID_ATTR_NAME);
+        } catch (PackageManager.NameNotFoundException e) {
+            // Should REALLY never happen cause we're querying for our own package.
+            Log.e(LOGTAG, "Failed to resolve sender ID from manifest", e);
+            return null;
+        }
+    }
+
+    protected String getChanelNameFromManifest() {
+        final ApplicationInfo appInfo;
+        try {
+            appInfo = mContext.getPackageManager().getApplicationInfo(mContext.getPackageName(), PackageManager.GET_META_DATA);
+            return appInfo.metaData.getString(GCM_CHANEL_NAME_ATTR_NAME);
+        } catch (PackageManager.NameNotFoundException e) {
+            // Should REALLY never happen cause we're querying for our own package.
+            Log.e(LOGTAG, "Failed to resolve sender ID from manifest", e);
+            return null;
+        }
     }
 
     protected Notification.Builder addActionsToBuilder(Notification.Builder mBuilder, Bundle data) {
