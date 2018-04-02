@@ -13,8 +13,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReactContext;
-import com.wix.reactnativenotifications.ActionReceiver;
-import com.wix.reactnativenotifications.R;
 import com.wix.reactnativenotifications.RNNotificationsModule;
 import com.wix.reactnativenotifications.core.Action;
 import com.wix.reactnativenotifications.core.AppLaunchHelper;
@@ -29,7 +27,6 @@ import com.wix.reactnativenotifications.core.ProxyService;
 
 import static com.wix.reactnativenotifications.Defs.GCM_CHANEL_ID_ATTR_NAME;
 import static com.wix.reactnativenotifications.Defs.GCM_CHANEL_NAME_ATTR_NAME;
-import static com.wix.reactnativenotifications.Defs.GCM_SENDER_ID_ATTR_NAME;
 import static com.wix.reactnativenotifications.Defs.LOGTAG;
 import static com.wix.reactnativenotifications.Defs.NOTIFICATION_OPENED_EVENT_NAME;
 import static com.wix.reactnativenotifications.Defs.NOTIFICATION_RECEIVED_EVENT_NAME;

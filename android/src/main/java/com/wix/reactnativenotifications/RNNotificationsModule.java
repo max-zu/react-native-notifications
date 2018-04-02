@@ -2,8 +2,6 @@ package com.wix.reactnativenotifications;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
@@ -25,7 +23,6 @@ import com.wix.reactnativenotifications.core.notification.PushNotification;
 import com.wix.reactnativenotifications.core.notification.PushNotificationProps;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
-import com.wix.reactnativenotifications.gcm.GcmInstanceIdRefreshHandlerService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +56,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     @Override
     public void initialize() {
         Log.d(LOGTAG, "Native module init");
-        startGcmIntentService(GcmInstanceIdRefreshHandlerService.EXTRA_IS_APP_INIT);
+//        startGcmIntentService(GcmInstanceIdRefreshHandlerService.EXTRA_IS_APP_INIT);
 
         final IPushNotificationsDrawer notificationsDrawer = PushNotificationsDrawer.get(getReactApplicationContext().getApplicationContext());
         notificationsDrawer.onAppInit();
@@ -68,7 +65,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void refreshToken() {
         Log.d(LOGTAG, "Native method invocation: refreshToken()");
-        startGcmIntentService(GcmInstanceIdRefreshHandlerService.EXTRA_MANUAL_REFRESH);
+//        startGcmIntentService(GcmInstanceIdRefreshHandlerService.EXTRA_MANUAL_REFRESH);
     }
 
     @ReactMethod
@@ -159,10 +156,10 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
     public void onActivityDestroyed(Activity activity) {
     }
 
-    protected void startGcmIntentService(String extraFlag) {
-        final Context appContext = getReactApplicationContext().getApplicationContext();
-        final Intent tokenFetchIntent = new Intent(appContext, GcmInstanceIdRefreshHandlerService.class);
-        tokenFetchIntent.putExtra(extraFlag, true);
-        appContext.startService(tokenFetchIntent);
-    }
+//    protected void startGcmIntentService(String extraFlag) {
+//        final Context appContext = getReactApplicationContext().getApplicationContext();
+//        final Intent tokenFetchIntent = new Intent(appContext, GcmInstanceIdRefreshHandlerService.class);
+//        tokenFetchIntent.putExtra(extraFlag, true);
+//        appContext.startService(tokenFetchIntent);
+//    }
 }
