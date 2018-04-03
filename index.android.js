@@ -110,6 +110,10 @@ export class NotificationsAndroid {
     return id;
   }
 
+  static getPushToken(){
+    RNNotifications.getPushToken()
+  }
+
   static cancelLocalNotification(id) {
     RNNotifications.cancelLocalNotification(id);
   }

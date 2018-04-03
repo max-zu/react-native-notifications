@@ -6,13 +6,19 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.wix.reactnativenotifications.core.AppLifecycleFacade;
 import com.wix.reactnativenotifications.core.AppLifecycleFacadeHolder;
 import com.wix.reactnativenotifications.core.InitialNotificationHolder;
@@ -28,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.wix.reactnativenotifications.Defs.LOGTAG;
+import static com.wix.reactnativenotifications.Defs.TOKEN_RECEIVED_EVENT_NAME;
 
 public class RNNotificationsModule extends ReactContextBaseJavaModule implements AppLifecycleFacade.AppVisibilityListener, Application.ActivityLifecycleCallbacks {
 
@@ -91,6 +98,22 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
         final Bundle notificationProps = Arguments.toBundle(notificationPropsMap);
         final IPushNotification pushNotification = PushNotification.get(getReactApplicationContext().getApplicationContext(), notificationProps);
         pushNotification.onPostRequest(notificationId);
+    }
+
+    @ReactMethod
+    public void getPushToken() {
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        sendTokenToJS(refreshedToken);
+    }
+
+    protected void sendTokenToJS(String refreshedToken) {
+        final ReactInstanceManager instanceManager = ((ReactApplication) getReactApplicationContext().getApplicationContext()).getReactNativeHost().getReactInstanceManager();
+        final ReactContext reactContext = instanceManager.getCurrentReactContext();
+
+        // Note: Cannot assume react-context exists cause this is an async dispatched service.
+        if (reactContext != null && reactContext.hasActiveCatalystInstance()) {
+            reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(TOKEN_RECEIVED_EVENT_NAME, refreshedToken);
+        }
     }
 
     @ReactMethod
