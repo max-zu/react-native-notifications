@@ -26,6 +26,5 @@ public class ActionReceiver extends BroadcastReceiver {
         JsIOHelper mJsIOHelper = new JsIOHelper();
         intent.putExtra("action", intent.getAction());
         mJsIOHelper.sendEventToJS(intent.getAction(), intent.getExtras(), AppLifecycleFacadeHolder.get().getRunningReactContext());
-
     }
 }

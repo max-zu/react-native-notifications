@@ -241,7 +241,7 @@ public class PushNotification implements IPushNotification {
     }
 
     protected void launchOrResumeApp() {
-        final Intent intent = mAppLaunchHelper.getLaunchIntent(mContext);
+        final Intent intent = mAppLaunchHelper.getLaunchIntent(mContext,mNotificationProps.asBundle());
         mContext.startActivity(intent);
     }
 }

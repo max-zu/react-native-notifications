@@ -3,14 +3,17 @@ package com.wix.reactnativenotifications.core;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
+
+import static com.wix.reactnativenotifications.core.NotificationIntentAdapter.PUSH_NOTIFICATION_EXTRA_NAME;
 
 public class AppLaunchHelper {
     private static final String TAG = AppLaunchHelper.class.getSimpleName();
 
     private static final String LAUNCH_FLAG_KEY_NAME = "launchedFromNotification";
 
-    public Intent getLaunchIntent(Context appContext) {
+    public Intent getLaunchIntent(Context appContext, Bundle data) {
         try {
             // The desired behavior upon notification opening is as follows:
             // - If app is in foreground (and possibly has several activities in stack), simply keep it as-is in foreground.
@@ -24,6 +27,7 @@ public class AppLaunchHelper {
             final Intent intent = new Intent(appContext, Class.forName(helperIntent.getComponent().getClassName()));
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             intent.putExtra(LAUNCH_FLAG_KEY_NAME, true);
+            intent.putExtra(PUSH_NOTIFICATION_EXTRA_NAME,  data);
             return intent;
         } catch (ClassNotFoundException e) {
             // Note: this is an imaginary scenario cause we're asking for a class of our very own package.

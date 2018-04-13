@@ -8,7 +8,7 @@ import android.os.Bundle;
 import com.wix.reactnativenotifications.core.notification.PushNotificationProps;
 
 public class NotificationIntentAdapter {
-    private static final String PUSH_NOTIFICATION_EXTRA_NAME = "pushNotification";
+    public static final String PUSH_NOTIFICATION_EXTRA_NAME = "pushNotification";
 
     public static PendingIntent createPendingNotificationIntent(Context appContext, Intent intent, PushNotificationProps notification) {
         intent.putExtra(PUSH_NOTIFICATION_EXTRA_NAME, notification.asBundle());
