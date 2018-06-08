@@ -153,7 +153,7 @@ public class PushNotification implements IPushNotification {
         Notification.Builder mBuilder = new Notification.Builder(mContext)
                 .setContentTitle(mNotificationProps.getTitle())
                 .setContentText(mNotificationProps.getBody())
-                .setSmallIcon(mContext.getApplicationInfo().icon)
+                .setSmallIcon(geIconFromManifest())
                 .setContentIntent(intent)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setAutoCancel(true);
@@ -187,6 +187,19 @@ public class PushNotification implements IPushNotification {
         try {
             appInfo = mContext.getPackageManager().getApplicationInfo(mContext.getPackageName(), PackageManager.GET_META_DATA);
             return appInfo.metaData.getString(GCM_CHANEL_NAME_ATTR_NAME);
+        } catch (PackageManager.NameNotFoundException e) {
+            // Should REALLY never happen cause we're querying for our own package.
+            Log.e(LOGTAG, "Failed to resolve sender ID from manifest", e);
+            return null;
+        }
+    }
+    
+    
+    protected int geIconFromManifest() {
+        final ApplicationInfo appInfo;
+        try {
+            appInfo = mContext.getPackageManager().getApplicationInfo(mContext.getPackageName(), PackageManager.GET_META_DATA);
+            return appInfo.metaData.getInt("PUSH_ICON");
         } catch (PackageManager.NameNotFoundException e) {
             // Should REALLY never happen cause we're querying for our own package.
             Log.e(LOGTAG, "Failed to resolve sender ID from manifest", e);
