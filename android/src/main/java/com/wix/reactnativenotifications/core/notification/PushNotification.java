@@ -203,7 +203,7 @@ public class PushNotification implements IPushNotification {
         } catch (PackageManager.NameNotFoundException e) {
             // Should REALLY never happen cause we're querying for our own package.
             Log.e(LOGTAG, "Failed to resolve sender ID from manifest", e);
-            return null;
+            return 0;
         }
     }
 
