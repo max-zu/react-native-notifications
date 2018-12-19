@@ -156,6 +156,7 @@ public class PushNotification implements IPushNotification {
                 .setSmallIcon(geIconFromManifest())
                 .setContentIntent(intent)
                 .setDefaults(Notification.DEFAULT_ALL)
+                .setShowWhen(true)
                 .setAutoCancel(true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
