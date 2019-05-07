@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "25"
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         minSdkVersion 16
@@ -20,7 +20,7 @@ android {
 
 dependencies {
     // Google's GCM.
-    compile "com.google.firebase:firebase-messaging:+"
+    compile "com.google.firebase:firebase-messaging:17.6.0"
 
     compile 'com.facebook.react:react-native:+'
 
