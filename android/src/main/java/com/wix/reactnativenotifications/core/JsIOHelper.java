@@ -16,6 +16,16 @@ public class JsIOHelper {
         return false;
     }
 
+    public boolean sendEventToJS(String eventName, Bundle data, ReactContext reactContext, int id) {
+        if (reactContext != null) {
+            WritableMap map =  Arguments.fromBundle(data);
+            map.putInt("local_id", id);
+            sendEventToJS(eventName, map, reactContext);
+            return true;
+        }
+        return false;
+    }
+
     public boolean sendEventToJS(String eventName, WritableMap data, ReactContext reactContext) {
         if (reactContext != null) {
             reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, data);

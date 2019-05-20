@@ -70,8 +70,8 @@ public class PushNotification implements IPushNotification {
 
     @Override
     public void onReceived() throws InvalidNotificationException {
-        postNotification(null);
-        notifyReceivedToJS();
+        int id = postNotification(null);
+        notifyReceivedToJS(id);
     }
 
     @Override
@@ -246,8 +246,8 @@ public class PushNotification implements IPushNotification {
         return (int) System.nanoTime();
     }
 
-    private void notifyReceivedToJS() {
-        mJsIOHelper.sendEventToJS(NOTIFICATION_RECEIVED_EVENT_NAME, mNotificationProps.asBundle(), mAppLifecycleFacade.getRunningReactContext());
+    private void notifyReceivedToJS(int id) {
+        mJsIOHelper.sendEventToJS(NOTIFICATION_RECEIVED_EVENT_NAME, mNotificationProps.asBundle(), mAppLifecycleFacade.getRunningReactContext(), id);
     }
 
     private void notifyOpenedToJS() {
