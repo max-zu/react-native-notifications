@@ -69,8 +69,8 @@ public class PushNotification implements IPushNotification {
     }
 
     @Override
-    public void onReceived() throws InvalidNotificationException {
-        postNotification(null);
+    public void onReceived(boolean isSilent) throws InvalidNotificationException {
+        postNotification(null, isSilent);
         notifyReceivedToJS();
     }
 
@@ -90,10 +90,10 @@ public class PushNotification implements IPushNotification {
         return mNotificationProps.copy();
     }
 
-    protected int postNotification(Integer notificationId) {
+    protected int postNotification(Integer notificationId, boolean isSilent) {
         final PendingIntent pendingIntent = getCTAPendingIntent();
         final Notification notification = buildNotification(pendingIntent);
-        return postNotification(notification, notificationId);
+        return postNotification(notification, notificationId, isSilent);
     }
 
     protected void digestNotification() {
@@ -226,15 +226,17 @@ public class PushNotification implements IPushNotification {
         return mBuilder;
     }
 
-    protected int postNotification(Notification notification, Integer notificationId) {
+    protected int postNotification(Notification notification, Integer notificationId, boolean isSilent) {
         int id = notificationId != null ? notificationId : createNotificationId(notification);
-        postNotification(id, notification);
+        postNotification(id, notification, isSilent);
         return id;
     }
 
-    protected void postNotification(int id, Notification notification) {
+    protected void postNotification(int id, Notification notification, boolean isSilent) {
         final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(id, notification);
+        if (!isSilent) {
+            notificationManager.notify(id, notification);
+        }
     }
 
     protected void clearAllNotifications() {

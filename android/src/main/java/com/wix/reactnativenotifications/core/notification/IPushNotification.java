@@ -11,7 +11,7 @@ public interface IPushNotification {
      * Handle an event where notification has just been received.
      * @throws InvalidNotificationException
      */
-    void onReceived() throws InvalidNotificationException;
+    void onReceived(boolean isSilent) throws InvalidNotificationException;
 
     /**
      * Handle an event where notification has already been dispatched and is not being opened by the device user.
