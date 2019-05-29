@@ -29,7 +29,7 @@ public class GcmMessageHandlerService extends FirebaseMessagingService {
 
         try {
             final IPushNotification notification = PushNotification.get(getApplicationContext(), bundle);
-            notification.onReceived(bundle.getBoolean(SILENT_PUSH_KEY));
+            notification.onReceived(bundle.getBoolean(SILENT_PUSH_KEY, false));
         } catch (IPushNotification.InvalidNotificationException e) {
             // A GCM message, yes - but not the kind we know how to work with.
             Log.v(LOGTAG, "GCM message handling aborted", e);
