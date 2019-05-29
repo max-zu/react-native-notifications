@@ -29,6 +29,7 @@ import com.wix.reactnativenotifications.core.notification.PushNotification;
 import com.wix.reactnativenotifications.core.notification.PushNotificationProps;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
+import com.wix.reactnativenotifications.gcm.GcmMessageHandlerService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +98,7 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
         Log.d(LOGTAG, "Native method invocation: postLocalNotification");
         final Bundle notificationProps = Arguments.toBundle(notificationPropsMap);
         final IPushNotification pushNotification = PushNotification.get(getReactApplicationContext().getApplicationContext(), notificationProps);
-        pushNotification.onPostRequest(notificationId);
+        pushNotification.onPostRequest(notificationId, notificationPropsMap.hasKey(GcmMessageHandlerService.getSilentPushKey()) ? notificationPropsMap.getBoolean(GcmMessageHandlerService.getSilentPushKey()) : false);
     }
 
     @ReactMethod

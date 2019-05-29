@@ -14,7 +14,11 @@ import static com.wix.reactnativenotifications.Defs.LOGTAG;
 
 public class GcmMessageHandlerService extends FirebaseMessagingService {
 
-    private final static SILENT_PUSH_KEY = "is_silent";
+    private final static String SILENT_PUSH_KEY = "is_silent";
+
+    public static String getSilentPushKey() {
+        return SILENT_PUSH_KEY;
+    }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -24,7 +28,7 @@ public class GcmMessageHandlerService extends FirebaseMessagingService {
         }
         onMessageReceived("", bundle);
     }
-
+сч
     public void onMessageReceived(String s, Bundle bundle) {
 
         try {

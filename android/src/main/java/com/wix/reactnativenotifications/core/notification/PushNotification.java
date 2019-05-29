@@ -81,8 +81,8 @@ public class PushNotification implements IPushNotification {
     }
 
     @Override
-    public int onPostRequest(Integer notificationId) {
-        return postNotification(notificationId);
+    public int onPostRequest(Integer notificationId, boolean isSilent) {
+        return postNotification(notificationId, isSilent);
     }
 
     @Override
