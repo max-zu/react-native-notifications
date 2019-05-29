@@ -13,6 +13,9 @@ import java.util.Map;
 import static com.wix.reactnativenotifications.Defs.LOGTAG;
 
 public class GcmMessageHandlerService extends FirebaseMessagingService {
+
+    private final static SILENT_PUSH_KEY = "is_silent";
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Bundle bundle = new Bundle();
@@ -26,7 +29,7 @@ public class GcmMessageHandlerService extends FirebaseMessagingService {
 
         try {
             final IPushNotification notification = PushNotification.get(getApplicationContext(), bundle);
-            notification.onReceived();
+            notification.onReceived(bundle.getBoolean(SILENT_PUSH_KEY, false));
         } catch (IPushNotification.InvalidNotificationException e) {
             // A GCM message, yes - but not the kind we know how to work with.
             Log.v(LOGTAG, "GCM message handling aborted", e);
