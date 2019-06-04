@@ -28,7 +28,7 @@ public class GcmMessageHandlerService extends FirebaseMessagingService {
         }
         onMessageReceived("", bundle);
     }
-сч
+
     public void onMessageReceived(String s, Bundle bundle) {
 
         try {
